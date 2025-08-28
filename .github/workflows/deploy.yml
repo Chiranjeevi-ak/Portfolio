@@ -18,14 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
+
       - run: npm ci || npm i
-      - run: npm run dev
-      # SPA fix: copy index.html to 404.html so deep links work
-      - run: cp dist/index.html dist/404.html
+      - run: npm run build
+
+      # SPA fix: only copy if index.html exists
+      - run: test -f dist/index.html && cp dist/index.html dist/404.html || echo "No index.html to copy"
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
